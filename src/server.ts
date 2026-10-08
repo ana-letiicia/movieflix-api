@@ -18,13 +18,14 @@ import 'dotenv/config'
 import express from 'express'
 import { PrismaClient } from '../src/generated/prisma/client.js'
 import { PrismaPg } from '@prisma/adapter-pg'
-
+import swaggerUi from 'swagger-ui-express'
+import swaggerDocument from '../swagger.json' with { type: 'json' };
 const port = 3000
 const app = express()
-
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
 const prisma = new PrismaClient({ adapter })
 app.use(express.json())
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 app.get('/movies', async (_, res) => {
     const movies = await prisma.movie.findMany({
         orderBy: {
